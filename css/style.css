@@ -1,0 +1,10 @@
+body{ width:1000px; margin:25px auto; padding:0px; font-family:Verdana, Geneva, sans-serif;  }
+.uploadArea{ min-height:300px; height:auto; border:1px dotted #ccc; padding:10px; cursor:move; margin-bottom:10px; position:relative;}
+h1, h5{ padding:0px; margin:0px; }
+h1.title{ font-family:'Boogaloo', cursive; padding:10px; }
+.uploadArea h1{ color:#ccc; width:100%; z-index:0; text-align:center; vertical-align:middle; position:absolute; top:25px;}
+.dfiles{ clear:both; border:1px solid #ccc; background-color:#E4E4E4; padding:3px;  position:relative; height:25px; margin:3px; z-index:1; width:97%; opacity:0.6; cursor:default;}
+h5{ width:95%; line-height:25px;}
+h5, h5 img {  float:left;  }
+.invalid { border:1px solid red !important; }
+.progress {display:none; float:right; margin-top:5px; }
