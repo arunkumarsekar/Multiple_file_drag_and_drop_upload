@@ -7,4 +7,5 @@ h1.title{ font-family:'Boogaloo', cursive; padding:10px; }
 h5{ width:95%; line-height:25px;}
 h5, h5 img {  float:left;  }
 .invalid { border:1px solid red !important; }
-.progress {display:none; float:right; margin-top:5px; }
+.buttonUpload { display:inline-block; padding: 4px 10px 4px; text-align: center; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); background-color: #0074cc; -webkit-border-radius: 4px;-moz-border-radius: 4px; border-radius: 4px; border-color: #e6e6e6 #e6e6e6 #bfbfbf; border: 1px solid #cccccc; color:#fff; }
+.progress img{ margin-top:7px; margin-left:24px; }

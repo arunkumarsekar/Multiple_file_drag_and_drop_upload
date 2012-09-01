@@ -2,24 +2,35 @@ function multiUploader(config){
   
 	this.config = config;
 	this.items = "";
+	this.all = []
 	var self = this;
 	
 	multiUploader.prototype._init = function(){
 		if (window.File && 
 			window.FileReader && 
 			window.FileList && 
-			window.Blob) {
-			 document.getElementById("multiUpload").addEventListener("change", this._read, false);
-			 document.getElementById("dragAndDropFiles").addEventListener("dragover", function(e){ e.stopPropagation(); e.preventDefault(); }, false);
-			 document.getElementById("dragAndDropFiles").addEventListener("drop", this._dropFiles, false);
+			window.Blob) {		
+			 var inputId = $("#"+this.config.form).find("input[type='file']").eq(0).attr("id");
+			 document.getElementById(inputId).addEventListener("change", this._read, false);
+			 document.getElementById(this.config.dragArea).addEventListener("dragover", function(e){ e.stopPropagation(); e.preventDefault(); }, false);
+			 document.getElementById(this.config.dragArea).addEventListener("drop", this._dropFiles, false);
+			 document.getElementById(this.config.form).addEventListener("submit", this._submit, false);
 		} else
 			console.log("Browser supports failed");
 	}
 	
-	multiUploader.prototype._preview = function(){
+	multiUploader.prototype._submit = function(e){
+		e.stopPropagation(); e.preventDefault();
+		self._startUpload();
+	}
+	
+	multiUploader.prototype._preview = function(data){
+		this.items = data;
 		if(this.items.length > 0){
-			var html = "";
-			for(var i = 0; i<this.items.length; i++){
+			var html = "";		
+			var uId = "";
+ 			for(var i = 0; i<this.items.length; i++){
+				uId = this.items[i].name._unique();
 				var sampleIcon = '<img src="images/image.png" />';
 				var errorClass = "";
 				if(typeof this.items[i] != undefined){
@@ -27,7 +38,7 @@ function multiUploader(config){
 						sampleIcon = '<img src="images/unknown.png" />';
 						errorClass =" invalid";
 					} 
-					html += '<div class="dfiles'+errorClass+'" rel="'+i+'"><h5>'+sampleIcon+this.items[i].name+'</h5><div id="stat_'+i+'" class="progress"><img src="images/ajax-loader.gif" /></div></div>';
+					html += '<div class="dfiles'+errorClass+'" rel="'+uId+'"><h5>'+sampleIcon+this.items[i].name+'</h5><div id="'+uId+'" class="progress" style="display:none;"><img src="images/ajax-loader.gif" /></div></div>';
 				}
 			}
 			$("#dragAndDropFiles").append(html);
@@ -35,9 +46,9 @@ function multiUploader(config){
 	}
 
 	multiUploader.prototype._read = function(evt){
-		self.items = evt.target.files;
-		if(self.items){
-			self._upload();
+		if(evt.target.files){
+			self._preview(evt.target.files);
+			self.all.push(evt.target.files);
 		} else 
 			console.log("Failed file reading");
 	}
@@ -48,17 +59,18 @@ function multiUploader(config){
 	}
 	
 	multiUploader.prototype._dropFiles = function(e){
-		e.stopPropagation();
-		e.preventDefault();
-		self.items = e.dataTransfer.files;
-		self._upload();
+		e.stopPropagation(); e.preventDefault();
+		self._preview(e.dataTransfer.files);
+		self.all.push(e.dataTransfer.files);
 	}
-	multiUploader.prototype._startUpload = function(index){
-		data = new FormData();
-		if(typeof this.items[index] != undefined && self._validate(this.items[index].type) > 0){
-			data.append('file',this.items[index]);
-			data.append('index',index);
-			$("#stat_"+index).show();
+	
+	multiUploader.prototype._uploader = function(file,f){
+		if(typeof file[f] != undefined && self._validate(file[f].type) > 0){
+			var data = new FormData();
+			var ids = file[f].name._unique();
+			data.append('file',file[f]);
+			data.append('index',ids);
+			$(".dfiles[rel='"+ids+"']").find(".progress").show();
 			$.ajax({
 				type:"POST",
 				url:this.config.uploadUrl,
@@ -67,36 +79,40 @@ function multiUploader(config){
 				contentType: false,
 				processData: false,
 				success:function(rponse){
-					$("#stat_"+index).hide();
+					$("#"+ids).hide();
 					var obj = $(".dfiles").get();
 					$.each(obj,function(k,fle){
 						if($(fle).attr("rel") == rponse){
 							$(fle).slideUp("normal", function(){ $(this).remove(); });
-							if (index+1 < self.items.length) {
-								self._startUpload(index+1);
-							}
 						}
 					});
+					if (f+1 < file.length) {
+						self._uploader(file,f+1);
+					}
 				}
 			});
 		} else
-			console.log("invalid file format found");
+			console.log("Invalid file format - "+file[f].name);
 	}
 	
-	multiUploader.prototype._upload = function(){
-		if(this.items.length > 0){
-			self._preview(this.items);
-			var data = null;
-			setTimeout(function(){ self._startUpload(0); }, 5000);
+	multiUploader.prototype._startUpload = function(){
+		if(this.all.length > 0){
+			for(var k=0; k<this.all.length; k++){
+				var file = this.all[k];
+				this._uploader(file,0);
+			}
 		}
-	}	
+	}
+	
+	String.prototype._unique = function(){
+		return this.replace(/[a-zA-Z]/g, function(c){
+     	   return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+    	});
+	}
+
 	this._init();
 }
-var config = {
-	support : "image/jpg,image/png,image/bmp,image/jpeg,image/gif",
-	type : "multiple",
-	uploadUrl: "upload.php"
-}
-$(document).ready(function(){
+
+function initMultiUploader(){
 	new multiUploader(config);
-});
+}
