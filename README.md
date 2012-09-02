@@ -5,16 +5,16 @@ for this i used [Form Data] (http://www.w3.org/TR/FileAPI/) and [File Reader] (h
 
 ## File & Folders
 
- - /images 		Required images
- - /css 		Stylesheet files
- - /js  		Javascript files and libraries
- - /uploads  	New files holder
- - index.php	Client side File
- - upload.php	Server Side File
+ - /images 	-	Required images
+ - /css 	-	Stylesheet files
+ - /js  	-	Javascript files and libraries
+ - /uploads	-  	New files holder
+ - index.php -	Client side File
+ - upload.php -	Server Side File
 
 ## Requirements
 
-	- Jquery Library
+	- Jquery Library (version 1.7+)
 	- HTML5
 
 ## How to use
@@ -30,11 +30,34 @@ All Fields required.
 	
 ### Init
 
- Its simple init. Just call with required configurations.
+ Its simple init. Just call function with required configurations.
  
  	initMultiUploader(config);	
 
+## Example
+
+```javascript
+	var config = {
+		support : "image/jpg,image/png,image/bmp,image/jpeg,image/gif",	
+		form: "demoFiler",					
+		dragArea: "dragAndDropFiles",		
+		uploadUrl: "upload.php"				
+	}
+	$(document).ready(function(){
+		initMultiUploader(config);
+	});
+```	
 	
-	
+	<center><h1 class="title">Multiple Drag and Drop File Upload</h1></center>
+	<div id="dragAndDropFiles" class="uploadArea">
+		<h1>Drop Images Here</h1>
+	</div>
+	<form name="demoFiler" id="demoFiler" enctype="multipart/form-data">
+		<input type="file" name="multiUpload" id="multiUpload" multiple />
+		<input type="submit" name="submitHandler" id="submitHandler" value="Upload" class="buttonUpload" />
+	</form>
+	<div class="progressBar">
+		<div class="status"></div>
+	</div>	
 
 	
