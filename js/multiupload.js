@@ -88,7 +88,11 @@ function multiUploader(config){
 					});
 					if (f+1 < file.length) {
 						self._uploader(file,f+1);
-					}
+					}else {
+                        setTimeout(function(){
+                            window.location.reload(1);
+                        }, 700);
+                    }
 				}
 			});
 		} else
