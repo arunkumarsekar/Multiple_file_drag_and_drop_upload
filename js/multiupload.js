@@ -71,6 +71,7 @@ function multiUploader(config){
 			data.append('file',file[f]);
 			data.append('index',ids);
 			$(".dfiles[rel='"+ids+"']").find(".progress").show();
+            var that = this;
 			$.ajax({
 				type:"POST",
 				url:this.config.uploadUrl,
@@ -88,7 +89,9 @@ function multiUploader(config){
 					});
 					if (f+1 < file.length) {
 						self._uploader(file,f+1);
-					}
+					} else {
+                        that.items = [];that.all = [];
+                    }
 				}
 			});
 		} else
